@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us{% endblock title %}
+
+{%block css%}
+
+h1{
+border-bottom:2px solid black;
+<!-- margin-bottom:28px; -->
+}
+p{
+padding:50px 100px;
+}
+
+.conta{
+width:50%;
+}
+
+.img2{
+z-index:-1;
+position:relative;
+top:-19em;
+}
+#grad{
+margin-top:100px;
+display:flex;
+margin-bottom:100px;
+}
+
+.team{
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+}
+{%endblock%}
+
+{% block body %}
+<div id="grad">
+    <div class="img"><img src="../static/aboutus.jpg" alt="">
+    </div>
+    <div class="conta">
+        <h1 class="text-center" style="padding:20px 0px;">ABOUT US</h1>
+        <p>Hello Everyone, We are the group <b>Kasukabe</b> and we are here to represent tthe application which is a
+            <b>food
+                ordering</b> web app with help of the API <b>SAWO LABS</b>. We have developed this web app and made it
+            in a way
+            that it is user friendly so it is easier to customer to use.
+
+        </p>
+
+        <div class="team">
+            <h3>
+                Team Details:
+            </h3>
+            <h4>Yash Kumar</h4>
+            <h4>Tushar Sharma</h4>
+            <h4>Yughansh Chauhan</h4>
+        </div>
+    </div>
+
+</div>
+
+{% endblock body %}

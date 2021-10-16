@@ -1,0 +1,13 @@
+{%extends "base.html"%}
+
+{%block body%}
+<div class="container2 mx-auto my-auto" style="width:850px;">
+    <div class="text-center mt-5"
+        style="box-shadow: 10px 15px 20px rgb(0 0 0 / 50%); border-radius: 8px; background: rgb(221 221 221); padding: 20px 50px;">
+        <img src="https://img.freepik.com/free-vector/payment-transaction-done-via-app-illustration_57801-326.jpg?size=626&ext=jpg"
+            alt="" class="img-fluid">
+        <h2>Thanks you</h2>
+        <a href={% url 'order' %}><button type="submit" class="btn btn-success btn-block">Back</button></a>
+    </div>
+</div>
+{%endblock body%}

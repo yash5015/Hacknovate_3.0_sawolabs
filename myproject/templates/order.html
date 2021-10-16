@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders{% endblock title %}
+{%block css%}
+
+.razorpay-payment-button{
+width: 90px;
+height: 35px;
+border: 1px solid black;
+background: #e3f2fd;
+border-radius: 5px;
+}
+.fir {
+position: absolute;
+top: 35%;
+left: 40%;
+{% comment %} background:
+url('https://d2f7anuvnar8n5.cloudfront.net/p/assets/images/ex-download_d7a56c55fad58257615e3c7dd14c7ee2.png') no-repeat
+center center/cover; {% endcomment %}
+background: url('https://mindster.com/wp-content/uploads/2020/01/2018-11-29-1.jpg') no-repeat center center/cover;
+width: 300px;
+height: 300px;
+border-radius: 10px;
+display: flex;
+box-shadow: 10px 15px 20px rgb(0 0 0 / 50%);
+justify-content: center;
+align-items: center;
+}
+
+.container{
+    margin-top:100px;
+}
+
+{%endblock%}
+
+{% block body %}
+
+<div class="container">
+    <div class="col my-4">
+        <h2>Review Your Cart Items</h2>
+        <div class="my-4">
+            <ul class="list-group" id="items">
+            </ul>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mt-3">
+                    <li class="breadcrumb-item active" aria-current="page">Your Cart Total Is: <b> Rs.<span
+                                id="totalPrice"></b>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <div class="col my-4">
+        <h2>Enter Address & Other Details:</h2>
+        <form method="post" action="/order">{% csrf_token %}
+            <input type="hidden" name="itemsJson" id="itemsJson">
+            <input type="hidden" name="amount" id="amount" value="totalPrice">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputname">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail4">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputAddress">Address</label>
+                <input type="text" class="form-control" id="address1" name="address1" placeholder="1234 Main St"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="inputAddress2">Land Mark</label>
+                <input type="text" class="form-control" id="address2" name="address2" placeholder="Enter Land mark">
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputCity">City</label>
+                    <input type="text" class="form-control" id="city" name="city" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputState">State</label>
+                    <input type="text" class="form-control" id="state" name="state" placeholder="Enter State" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="inputZip">Pin Code</label>
+                    <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputphone">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </form>
+    </div>
+</div>
+
+
+{% if payment and payment.id%}
+<div class="container text-center mx-auto">
+    <div class="text-center mx-auto fir">
+        <form action=" /success" method="POST">
+            <!-- RAZORPAY INTEGRATION HERE -->
+            <script src="https://checkout.razorpay.com/v1/checkout.js" data-key="rzp_test_URte1E6IFmQae1"
+                data-amount="{{payment.amount}}" data-currency="INR" data-order_id="{{payment.id}}"
+                data-buttontext="Continue" data-name="Hurray!" data-description="buy me a coffee to cheerup!!!"
+                data-image="https://example.com/your_logo.jpg" data-prefill.name="demo"
+                data-prefill.email="demo@gmail.com" data-theme.color="#F37254"></script>
+            <input type="hidden" custom="Hidden Element" name="hidden">
+        </form>
+
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}
+{% block js %}
+<script>
+
+    $('#popcart').popover();
+    updatePopover(cart);
+
+    function updatePopover(cart) {
+        // console.log('We are inside updatePopover'); 
+        var popStr = "";
+        popStr = popStr + "<h5> My Cart items </h5><div class='mx-2 my-2'>";
+        var i = 1;
+        for (var item in cart) {
+            popStr = popStr + "<b>" + i + "</b>. ";
+            popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0,) + "... Qty: " + cart[item][0] + '<br>';
+            i = i + 1;
+        }
+        popStr = popStr + "</div> <a href='/shop/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>     "
+        console.log(popStr);
+        document.getElementById('popcart').setAttribute('data-content', popStr);
+        // $('#popcart').popover('show');
+        $("#popcart").popover({ trigger: "hover" });
+    }
+
+    function clearCart() {
+        cart = JSON.parse(localStorage.getItem('cart'));
+        for (var item in cart) {
+            document.getElementById('div' + item).innerHTML = '<button id="' + item + '" class="btn btn-danger cart">Add To Cart</button>'
+        }
+        localStorage.clear();
+        cart = {};
+        updateCart(cart);
+    }
+
+    // ##############################
+
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+    } else {
+        cart = JSON.parse(localStorage.getItem('cart'));
+    }
+    console.log(cart);
+    var sum = 0;
+    var totalPrice = 0;
+    if ($.isEmptyObject(cart)) {
+        //if object is empty
+        mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
+        $('#items').append(mystr);
+    } else {
+        for (item in cart) {
+            let name = cart[item][1];
+            let qty = cart[item][0];
+            let itemPrice = cart[item][2];
+            sum = sum + qty;
+            totalPrice += qty * itemPrice
+            mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${name}
+                    <span class="badge badge-primary badge-pill">${qty}</span>
+                </li>`
+            $('#items').append(mystr);
+        }
+    }
+    document.getElementById('cart').innerHTML = sum;
+    document.getElementById('totalPrice').innerHTML = totalPrice;
+    document.getElementById("amount").value = totalPrice
+    $('#itemsJson').val(JSON.stringify(cart));
+
+</script>
+{% endblock %}
